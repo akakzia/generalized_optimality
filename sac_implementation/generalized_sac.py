@@ -2,14 +2,14 @@ import os
 import torch
 import torch.nn.functional as F
 from torch.optim import Adam
-from utils import soft_update, hard_update
-from model import GaussianPolicy, QNetwork, DeterministicPolicy
+from sac_implementation.utils import soft_update, hard_update
+from sac_implementation.model import GaussianPolicy, QNetwork, DeterministicPolicy
 
 
 class GSAC(object):
     def __init__(self, num_inputs, action_space, args):
 
-        self.gamma_1 = 0.1
+        self.gamma_1 = 0.2
         self.gamma_2 = 0.99
         self.tau = args.tau
         self.alpha = args.alpha

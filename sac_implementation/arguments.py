@@ -33,17 +33,17 @@ def get_args():
                         help='random seed (default: 123456)')
     parser.add_argument('--batch_size', type=int, default=256, metavar='N',
                         help='batch size (default: 256)')
-    parser.add_argument('--max-episode-steps', type=int, default=1000, metavar='N',
+    parser.add_argument('--max-episode-steps', type=int, default=300, metavar='N',
                         help='number of steps per episode (default: 100)')
     parser.add_argument('--num_steps', type=int, default=1000001, metavar='N',
                         help='maximum number of steps (default: 1000000)')
     parser.add_argument('--hidden_size', type=int, default=256, metavar='N',
                         help='hidden size (default: 256)')
-    parser.add_argument('--updates_per_step', type=int, default=1, metavar='N',
+    parser.add_argument('--updates_per_step', type=int, default=30, metavar='N',
                         help='model updates per simulator step (default: 1)')
     parser.add_argument('--start_steps', type=int, default=10000, metavar='N',
                         help='Steps sampling random actions (default: 10000)')
-    parser.add_argument('--target_update_interval', type=int, default=1, metavar='N',
+    parser.add_argument('--target_update_interval', type=int, default=2, metavar='N',
                         help='Value target update per no. of updates per step (default: 1)')
     parser.add_argument('--replay_size', type=int, default=1000000, metavar='N',
                         help='size of replay buffer (default: 10000000)')

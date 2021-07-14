@@ -5,11 +5,11 @@ import numpy as np
 from mpi4py import MPI
 import itertools
 import torch
-from sac import SAC
-from generalized_sac import GSAC
+from sac_implementation.sac import SAC
+from sac_implementation.generalized_sac import GSAC
 from torch.utils.tensorboard import SummaryWriter
-from replay_memory import ReplayMemory
-from arguments import get_args
+from sac_implementation.replay_memory import ReplayMemory
+from sac_implementation.arguments import get_args
 
 def launch(args):
     rank = MPI.COMM_WORLD.Get_rank()
@@ -56,18 +56,6 @@ def launch(args):
             else:
                 action = agent.select_action(state)  # Sample action from policy
 
-            if len(memory) > args.batch_size:
-                # Number of updates per step in environment
-                for i in range(args.updates_per_step):
-                    # Update parameters of all the networks
-                    critic_1_loss, critic_2_loss, policy_loss, ent_loss, alpha = agent.update_parameters(memory, args.batch_size, updates)
-
-                    writer.add_scalar('loss/critic_1', critic_1_loss, updates)
-                    writer.add_scalar('loss/critic_2', critic_2_loss, updates)
-                    writer.add_scalar('loss/policy', policy_loss, updates)
-                    writer.add_scalar('loss/entropy_loss', ent_loss, updates)
-                    writer.add_scalar('entropy_temprature/alpha', alpha, updates)
-                    updates += 1
 
             next_state, reward, done, _ = env.step(action) # Step
             episode_steps += 1
@@ -85,8 +73,21 @@ def launch(args):
             # if done:
             #     state = env.reset()
 
-        if total_numsteps > args.num_steps:
-            break
+        if len(memory) > args.batch_size:
+            # Number of updates per step in environment
+            for i in range(args.updates_per_step):
+                # Update parameters of all the networks
+                critic_1_loss, critic_2_loss, policy_loss, ent_loss, alpha = agent.update_parameters(memory, args.batch_size, updates)
+
+                writer.add_scalar('loss/critic_1', critic_1_loss, updates)
+                writer.add_scalar('loss/critic_2', critic_2_loss, updates)
+                writer.add_scalar('loss/policy', policy_loss, updates)
+                writer.add_scalar('loss/entropy_loss', ent_loss, updates)
+                writer.add_scalar('entropy_temprature/alpha', alpha, updates)
+                updates += 1
+
+            if total_numsteps > args.num_steps:
+                break
 
         writer.add_scalar('reward/train', episode_reward, i_episode)
         print("Episode: {}, total numsteps: {}, episode steps: {}, reward: {}".format(i_episode, total_numsteps, episode_steps, round(episode_reward, 2)))
@@ -118,7 +119,7 @@ def launch(args):
             print("----------------------------------------")
             print("Test Episodes: {}, Avg. Reward: {}".format(episodes, round(avg_reward, 2)))
             print("----------------------------------------")
-            agent.save_model(env_name=args.env_name, suffix='normal')
+            agent.save_model(env_name=args.env_name, suffix='gen')
 
     env.close()
 

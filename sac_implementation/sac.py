@@ -2,8 +2,8 @@ import os
 import torch
 import torch.nn.functional as F
 from torch.optim import Adam
-from utils import soft_update, hard_update
-from model import GaussianPolicy, QNetwork, DeterministicPolicy
+from sac_implementation.utils import soft_update, hard_update
+from sac_implementation.model import GaussianPolicy, QNetwork, DeterministicPolicy
 
 
 class SAC(object):
@@ -118,6 +118,7 @@ class SAC(object):
 
     # Load model parameters
     def load_model(self, actor_path, critic_path):
+        print(actor_path)
         print('Loading models from {} and {}'.format(actor_path, critic_path))
         if actor_path is not None:
             self.policy.load_state_dict(torch.load(actor_path))

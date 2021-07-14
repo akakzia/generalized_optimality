@@ -52,8 +52,8 @@ env = gym.make(args.env_name)
 
 # Agent
 agent = GSAC(env.observation_space.shape[0], env.action_space, args)
-
-# agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_deceptive', critic_path='models/sac_critic_DeceptiveSquare-v0_deceptive')
+# agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_normal',
+#                  critic_path='models/sac_critic_DeceptiveSquare-v0_normal')
 agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_gen',
                  critic_1_path='models/sac_critic_1_DeceptiveSquare-v0_gen',
                  critic_2_path='models/sac_critic_2_DeceptiveSquare-v0_gen')
@@ -64,8 +64,8 @@ for episode in range(nb_demos):
     state = env.reset()
     episode_reward = 0
     done = False
-    for i in range(1000):
-        action = agent.select_action(state, evaluate=True)
+    for i in range(300):
+        action = agent.select_action(state, evaluate=False)
         # action = env.action_space.sample()
 
         next_state, reward, done, _ = env.step(action)
