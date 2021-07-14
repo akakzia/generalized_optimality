@@ -20,6 +20,10 @@ def get_args():
                         help='Evaluates a policy a policy every 10 episode (default: True)')
     parser.add_argument('--gamma', type=float, default=0.99, metavar='G',
                         help='discount factor for reward (default: 0.99)')
+    parser.add_argument('--gamma-1', type=float, default=0.99, metavar='G',
+                        help='discount factor for reward (default: 0.99)')
+    parser.add_argument('--gamma-1', type=float, default=0.99, metavar='G',
+                        help='discount factor for reward (default: 0.99)')
     parser.add_argument('--tau', type=float, default=0.005, metavar='G',
                         help='target smoothing coefficient(τ) (default: 0.005)')
     parser.add_argument('--lr', type=float, default=0.001, metavar='G',

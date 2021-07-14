@@ -9,8 +9,8 @@ from sac_implementation.model import GaussianPolicy, QNetwork, DeterministicPoli
 class GSAC(object):
     def __init__(self, num_inputs, action_space, args):
 
-        self.gamma_1 = 0.2
-        self.gamma_2 = 0.99
+        self.gamma_1 = args.gamma_1
+        self.gamma_2 = args.gamma_2
         self.tau = args.tau
         self.alpha = args.alpha
 
