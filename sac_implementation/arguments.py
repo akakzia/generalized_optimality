@@ -22,7 +22,7 @@ def get_args():
                         help='discount factor for reward (default: 0.99)')
     parser.add_argument('--gamma-1', type=float, default=0.99, metavar='G',
                         help='discount factor for reward (default: 0.99)')
-    parser.add_argument('--gamma-1', type=float, default=0.99, metavar='G',
+    parser.add_argument('--gamma-2', type=float, default=0.99, metavar='G',
                         help='discount factor for reward (default: 0.99)')
     parser.add_argument('--tau', type=float, default=0.005, metavar='G',
                         help='target smoothing coefficient(τ) (default: 0.005)')
