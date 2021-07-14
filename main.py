@@ -119,7 +119,7 @@ def launch(args):
             print("----------------------------------------")
             print("Test Episodes: {}, Avg. Reward: {}".format(episodes, round(avg_reward, 2)))
             print("----------------------------------------")
-            agent.save_model(env_name=args.env_name, suffix='gen')
+            agent.save_model(env_name=args.env_name, suffix=datetime.time)
 
     env.close()
 

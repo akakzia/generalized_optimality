@@ -15,9 +15,9 @@ class GoalRewardDeceptiveMaze(MazeTask):
 
     def reward(self, obs):
         if self.termination(obs) == 1:
-            return 800
+            return 0.8
         elif self.termination(obs) == 2:
-            return 1000
+            return 1
         return self.PENALTY
         # return 1.0 if self.termination(obs) else self.PENALTY
 
