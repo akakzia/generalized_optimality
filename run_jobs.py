@@ -18,20 +18,20 @@ gammas = [0.73, 0.75, 0.97, 0.99]
 # for gamma1 in gammas:
 gamma1 = 0.0
 for gamma2 in gammas:
-    job_file = os.path.join(job_directory, "{}_{}.job".format(gamma1, gamma2))
+    job_file = os.path.join(job_directory, "{}_{}.slurm".format(gamma1, gamma2))
 
     with open(job_file, 'w') as fh:
         fh.writelines("#!/bin/bash\n")
         fh.writelines("#SBATCH --account=oke@cpu\n")
-        fh.writelines("# SBATCH --job-name=test\n")
-        fh.writelines("# SBATCH --partition=cpu_p1\n")
-        fh.writelines("# SBATCH --qos=qos_cpu-dev\n")
-        fh.writelines("# SBATCH --output=gsac_{}_{}_%j.out\n".format(gamma1, gamma2))
-        fh.writelines("# SBATCH --error=gsac_{}_{}_%j.out\n".format(gamma1, gamma2))
-        fh.writelines("# SBATCH --time=1:00:00\n")
-        fh.writelines("# SBATCH --nodes=1\n")
-        fh.writelines("# SBATCH --ntasks=1\n")
-        fh.writelines("# SBATCH --hint=nomultithread\n")
+        fh.writelines("#SBATCH --job-name=test\n")
+        fh.writelines("#SBATCH --partition=cpu_p1\n")
+        fh.writelines("#SBATCH --qos=qos_cpu-dev\n")
+        fh.writelines("#SBATCH --output=gsac_{}_{}_%j.out\n".format(gamma1, gamma2))
+        fh.writelines("#SBATCH --error=gsac_{}_{}_%j.out\n".format(gamma1, gamma2))
+        fh.writelines("#SBATCH --time=1:00:00\n")
+        fh.writelines("#SBATCH --nodes=1\n")
+        fh.writelines("#SBATCH --ntasks=1\n")
+        fh.writelines("#SBATCH --hint=nomultithread\n")
 
         fh.writelines("module load pytorch-cpu/py3/1.4.0\n")
 
