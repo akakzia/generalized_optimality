@@ -13,7 +13,7 @@ scratch = os.environ['SCRATCH']
 # Make top level directories
 mkdir_p(job_directory)
 
-gammas = [0.71 + 0.01*i for i in range(15)]
+gammas = [0.73, 0.75, 0.97, 0.99]
 
 for gamma1 in gammas:
     for gamma2 in gammas:
@@ -32,7 +32,7 @@ for gamma1 in gammas:
             fh.writelines("# SBATCH --ntasks=1\n")
             fh.writelines("# SBATCH --hint=nomultithread\n")
 
-            fh.writelines("module load pytorch-cpu/py3/1.4.0")
+            fh.writelines("module load pytorch-cpu/py3/1.4.0\n")
 
             fh.writelines("export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/gpfslocalsup/spack_soft/mesa/18.3.6/gcc-9.1.0-bikg6w3g2be2otzrmyy43zddre4jahme/lib\n")
             fh.writelines("export LIBRARY_PATH=$LIBRARY_PATH:/gpfslocalsup/spack_soft/mesa/18.3.6/gcc-9.1.0-bikg6w3g2be2otzrmyy43zddre4jahme/lib\n")
