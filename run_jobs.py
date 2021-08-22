@@ -13,13 +13,13 @@ scratch = os.environ['SCRATCH']
 # Make top level directories
 mkdir_p(job_directory)
 
-gammas = [0.71 * 0.01*i for i in range(15)]
+gammas = [0.71 + 0.01*i for i in range(15)]
 
 for gamma1 in gammas:
     for gamma2 in gammas:
         job_file = os.path.join(job_directory, "{}_{}.job".format(gamma1, gamma2))
 
-        with open(job_file) as fh:
+        with open(job_file, 'w') as fh:
             fh.writelines("#!/bin/bash\n")
             fh.writelines("#SBATCH --account=oke@cpu\n")
             fh.writelines("# SBATCH --job-name=test\n")
