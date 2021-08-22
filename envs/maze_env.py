@@ -338,15 +338,19 @@ class MazeEnv(gym.Env):
         obs = np.concatenate([wrapped_obs[:3]] + additional_obs + [wrapped_obs[3:]])
         return np.concatenate([obs, *view, np.array([self.t * 0.001])])
 
-    def reset(self) -> np.ndarray:
+    def reset(self, evaluate=False) -> np.ndarray:
         self.t = 0
         self.wrapped_env.reset()
         # Samples a new goal
         if self._task.sample_goals():
             self.set_marker()
         # Samples a new start position
-        if len(self._init_positions) > 1:
-            xy = np.random.choice(self._init_positions)
+        if not evaluate:
+            if len(self._init_positions) > 1:
+                xy = self._init_positions[np.random.randint(len(self._init_positions))]
+                self.wrapped_env.set_xy(xy)
+        else:
+            xy = self._init_positions[1] # the exact desired initial spot
             self.wrapped_env.set_xy(xy)
         return self._get_obs()
 

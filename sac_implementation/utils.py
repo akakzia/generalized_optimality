@@ -1,5 +1,8 @@
 import math
 import torch
+import os
+from datetime import datetime
+import json
 
 def create_log_gaussian(mean, log_std, t):
     quadratic = -((0.5 * (t - mean) / (log_std.exp())).pow(2))
@@ -26,3 +29,22 @@ def soft_update(target, source, tau):
 def hard_update(target, source):
     for target_param, param in zip(target.parameters(), source.parameters()):
         target_param.data.copy_(param.data)
+
+def init_storage(args):
+    if not os.path.exists(args.save_dir):
+        os.mkdir(args.save_dir)
+    # path to save the model
+    logdir = os.path.join(args.save_dir, '{}_{}'.format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), args.agent))
+    if args.agent == 'SAC':
+        logdir += '_{}'.format(args.gamma)
+    else:
+        logdir += '_{}_{}'.format(args.gamma_1, args.gamma_2)
+    # path to save evaluations
+    model_path = os.path.join(logdir, 'models')
+    if not os.path.exists(logdir):
+        os.mkdir(logdir)
+    if not os.path.exists(model_path):
+        os.mkdir(model_path)
+    with open(os.path.join(logdir, 'config.json'), 'w') as f:
+        json.dump(vars(args), f, indent=2)
+    return logdir, model_path

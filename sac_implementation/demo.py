@@ -13,6 +13,10 @@ parser.add_argument('--eval', type=bool, default=True,
                     help='Evaluates a policy a policy every 10 episode (default: True)')
 parser.add_argument('--gamma', type=float, default=0.99, metavar='G',
                     help='discount factor for reward (default: 0.99)')
+parser.add_argument('--gamma-1', type=float, default=0.99, metavar='G',
+                    help='discount factor for reward (default: 0.99)')
+parser.add_argument('--gamma-2', type=float, default=0.99, metavar='G',
+                    help='discount factor for reward (default: 0.99)')
 parser.add_argument('--tau', type=float, default=0.005, metavar='G',
                     help='target smoothing coefficient(τ) (default: 0.005)')
 parser.add_argument('--lr', type=float, default=0.001, metavar='G',
@@ -32,6 +36,8 @@ parser.add_argument('--num_steps', type=int, default=1000001, metavar='N',
                     help='maximum number of steps (default: 1000000)')
 parser.add_argument('--hidden_size', type=int, default=256, metavar='N',
                     help='hidden size (default: 256)')
+parser.add_argument('--update_frequency', type=int, default=10, metavar='N',
+                    help='model updates per simulator step (default: 1)')
 parser.add_argument('--updates_per_step', type=int, default=1, metavar='N',
                     help='model updates per simulator step (default: 1)')
 parser.add_argument('--start_steps', type=int, default=10000, metavar='N',
@@ -51,21 +57,21 @@ args = parser.parse_args()
 env = gym.make(args.env_name)
 
 # Agent
-agent = GSAC(env.observation_space.shape[0], env.action_space, args)
-# agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_normal',
-#                  critic_path='models/sac_critic_DeceptiveSquare-v0_normal')
-agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_gen',
-                 critic_1_path='models/sac_critic_1_DeceptiveSquare-v0_gen',
-                 critic_2_path='models/sac_critic_2_DeceptiveSquare-v0_gen')
-nb_demos = 5
+agent = SAC(env.observation_space.shape[0], env.action_space, args)
+agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_SAC',
+                 critic_path='models/sac_critic_DeceptiveSquare-v0_SAC')
+# agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_0.7_0.99',
+#                  critic_1_path='models/sac_critic_1_DeceptiveSquare-v0_0.7_0.99',
+#                  critic_2_path='models/sac_critic_2_DeceptiveSquare-v0_0.7_0.99')
+nb_demos = 10
 
 avg_reward = 0
 for episode in range(nb_demos):
-    state = env.reset()
+    state = env.reset(evaluate=True)
     episode_reward = 0
     done = False
-    for i in range(300):
-        action = agent.select_action(state, evaluate=False)
+    for i in range(200):
+        action = agent.select_action(state, evaluate=True)
         # action = env.action_space.sample()
 
         next_state, reward, done, _ = env.step(action)

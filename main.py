@@ -5,11 +5,13 @@ import numpy as np
 from mpi4py import MPI
 import itertools
 import torch
+import pickle as pkl
 from sac_implementation.sac import SAC
 from sac_implementation.generalized_sac import GSAC
-from torch.utils.tensorboard import SummaryWriter
 from sac_implementation.replay_memory import ReplayMemory
 from sac_implementation.arguments import get_args
+import sac_implementation.logger as logger
+from sac_implementation.utils import init_storage
 
 def launch(args):
     rank = MPI.COMM_WORLD.Get_rank()
@@ -31,11 +33,17 @@ def launch(args):
     else:
         raise NotImplementedError
 
-    # Tensorboard
-    if rank == 0:
-        writer = SummaryWriter('runs/{}_{}_{}_{}_{}'.format(datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"), args.agent,
-                                                            args.env_name, args.policy,
-                                                            "autotune" if args.automatic_entropy_tuning else ""))
+    # Set up logger
+    logdir, model_path = init_storage(args)
+    logger.configure(dir=logdir)
+    logger.info(vars(args))
+
+    # stats
+    stats = dict()
+    stats['episodes'] = []
+    stats['environment steps'] = []
+    stats['updates'] = []
+    stats['test SR'] = []
 
     # Memory
     memory = ReplayMemory(args.replay_size, args.seed)
@@ -47,24 +55,25 @@ def launch(args):
     for i_episode in itertools.count(1):
         episode_reward = 0
         episode_steps = 0
-        state = env.reset()
+        state = env.reset(evaluate=False)
         done = False
 
-        while not done and episode_steps < args.max_episode_steps:
+        # Perform one rollout
+        while episode_steps < args.max_episode_steps:
             if args.start_steps > total_numsteps:
                 action = env.action_space.sample()  # Sample random action
             else:
                 action = agent.select_action(state)  # Sample action from policy
 
-
             next_state, reward, done, _ = env.step(action) # Step
             episode_steps += 1
             total_numsteps += 1
-            episode_reward += reward
+            episode_reward = max(reward, episode_reward)
 
             # Ignore the "done" signal if it comes from hitting the time horizon.
             # (https://github.com/openai/spinningup/blob/master/spinup/algos/sac/sac.py)
-            mask = 1 if episode_steps == args.max_episode_steps else float(not done)
+            mask = 1
+            # mask = 1 if episode_steps == args.max_episode_steps else float(not done)
 
             memory.push(state, action, reward, next_state, mask) # Append transition to memory
 
@@ -78,25 +87,18 @@ def launch(args):
             for i in range(args.updates_per_step):
                 # Update parameters of all the networks
                 critic_1_loss, critic_2_loss, policy_loss, ent_loss, alpha = agent.update_parameters(memory, args.batch_size, updates)
-
-                writer.add_scalar('loss/critic_1', critic_1_loss, updates)
-                writer.add_scalar('loss/critic_2', critic_2_loss, updates)
-                writer.add_scalar('loss/policy', policy_loss, updates)
-                writer.add_scalar('loss/entropy_loss', ent_loss, updates)
-                writer.add_scalar('entropy_temprature/alpha', alpha, updates)
                 updates += 1
+        if total_numsteps > args.num_steps:
+            break
 
-            if total_numsteps > args.num_steps:
-                break
-
-        writer.add_scalar('reward/train', episode_reward, i_episode)
         print("Episode: {}, total numsteps: {}, episode steps: {}, reward: {}".format(i_episode, total_numsteps, episode_steps, round(episode_reward, 2)))
 
         if i_episode % args.save_interval == 0 and args.eval is True:
+            logger.info('\n\nElapsed steps #{}'.format(total_numsteps))
             avg_reward = 0.
             episodes = 10
             for _ in range(episodes):
-                state = env.reset()
+                state = env.reset(evaluate=True)
                 episode_reward = 0
                 t = 0
                 done = False
@@ -113,15 +115,28 @@ def launch(args):
             avg_reward /= episodes
             # state = env.reset()
 
-
-            writer.add_scalar('avg_reward/test', avg_reward, i_episode)
-
+            log_and_save(stats, i_episode, total_numsteps, updates, avg_reward)
             print("----------------------------------------")
             print("Test Episodes: {}, Avg. Reward: {}".format(episodes, round(avg_reward, 2)))
             print("----------------------------------------")
-            agent.save_model(env_name=args.env_name, suffix="{}_{}".format(args.gamma_1, args.gamma_2))
+
+            if args.agent == 'GSAC':
+                agent.save_model(path=model_path)
+            else:
+                agent.save_model(path=model_path)
+
 
     env.close()
+    stop = 1
+
+def log_and_save(stats, i_episode, total_numsteps, updates, avg_reward):
+    stats['episodes'].append(i_episode)
+    stats['environment steps'].append(total_numsteps)
+    stats['updates'].append(updates)
+    stats['test SR'].append(avg_reward)
+    for k, l in stats.items():
+        logger.record_tabular(k, l[-1])
+    logger.dump_tabular()
 
 if __name__ == '__main__':
     # Prevent hyperthreading between MPI processes
