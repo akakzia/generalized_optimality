@@ -1,7 +1,7 @@
 import gym
 import numpy as np
 from envs.maze_env_utils import MazeCell
-from envs.maze_task import MazeGoal, MazeTask, BLUE
+from envs.maze_task import MazeGoal, MazeTask, BLUE, RED
 from envs.point import PointEnv
 
 
@@ -11,13 +11,13 @@ class GoalRewardDeceptiveMaze(MazeTask):
 
     def __init__(self, scale):
         super().__init__(scale)
-        self.goals = [MazeGoal(np.array([8., 4.]) * scale), MazeGoal(np.array([-1., 0.]) * scale, rgb=BLUE, deceptive=True)]
+        self.goals = [MazeGoal(np.array([-4., 9.]) * scale), MazeGoal(np.array([0., 0.]) * scale, rgb=BLUE, deceptive=True)]
 
     def reward(self, obs):
         if self.termination(obs) == 1:
-            return 2
+            return 0.1
         elif self.termination(obs) == 2:
-            return 10
+            return 1.
         return self.PENALTY
         # return 1.0 if self.termination(obs) else self.PENALTY
 
@@ -46,11 +46,23 @@ class GoalRewardDeceptiveMaze(MazeTask):
             # [B, B, B, B, R, B],
             # [B, E, R, R, R, B],
             # [B, B, B, B, B, B],
-            [B, B, B, B, B, B, B, B, B, B, B, B],
-            [B, E, R, R, R, B, B, B, B, B, B, B],
-            [B, B, B, B, R, B, B, B, B, B, B, B],
-            [B, B, B, B, R, B, B, B, B, B, B, B],
-            [B, B, B, B, R, B, B, B, B, B, B, B],
-            [B, B, B, B, R, R, R, R, R, R, E, B],
-            [B, B, B, B, B, B, B, B, B, B, B, B],
+            # [B, B, B, B, B, B, B, B, B, B, B, B],
+            # [B, R, R, R, R, B, B, B, B, B, B, B],
+            # [B, B, B, B, R, B, B, B, B, B, B, B],
+            # [B, B, B, B, R, B, B, B, B, B, B, B],
+            # [B, B, B, B, R, B, B, B, B, B, B, B],
+            # [B, B, B, B, R, R, R, R, R, R, R, B],
+            # [B, B, B, B, B, B, B, B, B, B, B, B],
+            [B, B, B, B, B, B, B],
+            [B, B, B, B, B, R, B],
+            [B, B, B, B, B, R, B],
+            [B, B, B, B, B, R, B],
+            [B, B, B, B, B, R, B],
+            [B, R, R, R, R, R, B],
+            [B, R, B, B, B, B, B],
+            [B, R, B, B, B, B, B],
+            [B, R, B, B, B, B, B],
+            [B, R, B, B, B, B, B],
+            [B, R, B, B, B, B, B],
+            [B, B, B, B, B, B, B],
         ]

@@ -57,13 +57,13 @@ args = parser.parse_args()
 env = gym.make(args.env_name)
 
 # Agent
-agent = SAC(env.observation_space.shape[0], env.action_space, args)
-agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_SAC',
-                 critic_path='models/sac_critic_DeceptiveSquare-v0_SAC')
-# agent.load_model(actor_path='models/sac_actor_DeceptiveSquare-v0_0.7_0.99',
-#                  critic_1_path='models/sac_critic_1_DeceptiveSquare-v0_0.7_0.99',
-#                  critic_2_path='models/sac_critic_2_DeceptiveSquare-v0_0.7_0.99')
-nb_demos = 10
+agent = GSAC(env.observation_space.shape[0], env.action_space, args)
+# agent.load_model(actor_path='experiments/2021-08-23 19:38:12_SAC_0.99/models/actor',
+#                  critic_path='experiments/2021-08-23 19:38:12_SAC_0.99/models/critic')
+agent.load_model(actor_path='experiments/2021-08-23 20:13:25_GSAC_0.99_0.99/models/actor',
+                 critic_1_path='experiments/2021-08-23 20:13:25_GSAC_0.99_0.99/models/critic_1',
+                 critic_2_path='experiments/2021-08-23 20:13:25_GSAC_0.99_0.99/models/critic_2')
+nb_demos = 20
 
 avg_reward = 0
 for episode in range(nb_demos):

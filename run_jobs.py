@@ -13,7 +13,7 @@ scratch = os.environ['SCRATCH']
 # Make top level directories
 mkdir_p(job_directory)
 
-gammas = [0.73, 0.75, 0.97, 0.99]
+gammas = [0.0, 0.73, 0.75, 0.97, 0.99]
 
 # for gamma1 in gammas:
 gamma1 = 0.0

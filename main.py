@@ -43,7 +43,8 @@ def launch(args):
     stats['episodes'] = []
     stats['environment steps'] = []
     stats['updates'] = []
-    stats['test SR'] = []
+    for k in range(14):
+        stats['test SR {}'.format(k)] = []
 
     # Memory
     memory = ReplayMemory(args.replay_size, args.seed)
@@ -55,15 +56,15 @@ def launch(args):
     for i_episode in itertools.count(1):
         episode_reward = 0
         episode_steps = 0
-        state = env.reset(evaluate=False)
+        state = env.reset(pos=np.random.randint(12))
         done = False
 
         # Perform one rollout
         while episode_steps < args.max_episode_steps:
-            if args.start_steps > total_numsteps:
-                action = env.action_space.sample()  # Sample random action
-            else:
-                action = agent.select_action(state)  # Sample action from policy
+            # if args.start_steps > total_numsteps:
+            #     action = env.action_space.sample()  # Sample random action
+            # else:
+            action = agent.select_action(state)  # Sample action from policy
 
             next_state, reward, done, _ = env.step(action) # Step
             episode_steps += 1
@@ -72,8 +73,8 @@ def launch(args):
 
             # Ignore the "done" signal if it comes from hitting the time horizon.
             # (https://github.com/openai/spinningup/blob/master/spinup/algos/sac/sac.py)
-            mask = 1
-            # mask = 1 if episode_steps == args.max_episode_steps else float(not done)
+            # mask = 1
+            mask = 1 if episode_steps == args.max_episode_steps else float(not done)
 
             memory.push(state, action, reward, next_state, mask) # Append transition to memory
 
@@ -82,7 +83,7 @@ def launch(args):
             # if done:
             #     state = env.reset()
 
-        if len(memory) > args.batch_size:
+        if len(memory) > args.start_steps:
             # Number of updates per step in environment
             for i in range(args.updates_per_step):
                 # Update parameters of all the networks
@@ -95,30 +96,32 @@ def launch(args):
 
         if i_episode % args.save_interval == 0 and args.eval is True:
             logger.info('\n\nElapsed steps #{}'.format(total_numsteps))
-            avg_reward = 0.
             episodes = 10
-            for _ in range(episodes):
-                state = env.reset(evaluate=True)
-                episode_reward = 0
-                t = 0
-                done = False
-                while not done and t < args.max_episode_steps:
-                    action = agent.select_action(state, evaluate=True)
+            for k in range(14):
+                avg_reward = 0.
+                for _ in range(episodes):
+                    state = env.reset(pos=k)
+                    episode_reward = 0
+                    t = 0
+                    done = False
+                    while not done and t < args.max_episode_steps:
+                        action = agent.select_action(state, evaluate=True)
 
-                    next_state, reward, done, _ = env.step(action)
-                    t += 1
-                    episode_reward += reward
+                        next_state, reward, done, _ = env.step(action)
+                        t += 1
+                        episode_reward += reward
 
 
-                    state = next_state
-                avg_reward += episode_reward
-            avg_reward /= episodes
+                        state = next_state
+                    avg_reward += episode_reward
+                avg_reward /= episodes
+                stats['test SR {}'.format(k)].append(np.around(avg_reward, 2))
             # state = env.reset()
 
             log_and_save(stats, i_episode, total_numsteps, updates, avg_reward)
-            print("----------------------------------------")
-            print("Test Episodes: {}, Avg. Reward: {}".format(episodes, round(avg_reward, 2)))
-            print("----------------------------------------")
+            # print("----------------------------------------")
+            # print("Test Episodes: {}, Avg. Reward: {}".format(episodes, round(avg_reward, 2)))
+            # print("----------------------------------------")
 
             if args.agent == 'GSAC':
                 agent.save_model(path=model_path)
@@ -133,7 +136,7 @@ def log_and_save(stats, i_episode, total_numsteps, updates, avg_reward):
     stats['episodes'].append(i_episode)
     stats['environment steps'].append(total_numsteps)
     stats['updates'].append(updates)
-    stats['test SR'].append(avg_reward)
+    # stats['test SR'].append(avg_reward)
     for k, l in stats.items():
         logger.record_tabular(k, l[-1])
     logger.dump_tabular()
