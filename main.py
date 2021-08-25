@@ -56,21 +56,20 @@ def launch(args):
     for i_episode in itertools.count(1):
         episode_reward = 0
         episode_steps = 0
-        state = env.reset(pos=np.random.randint(12))
+        state = env.reset(pos=np.random.randint(14))
         done = False
 
         # Perform one rollout
         while episode_steps < args.max_episode_steps:
-            # if args.start_steps > total_numsteps:
-            #     action = env.action_space.sample()  # Sample random action
-            # else:
-            action = agent.select_action(state)  # Sample action from policy
+            if args.start_steps > total_numsteps:
+                action = env.action_space.sample()  # Sample random action
+            else:
+                action = agent.select_action(state)  # Sample action from policy
 
             next_state, reward, done, _ = env.step(action) # Step
             episode_steps += 1
             total_numsteps += 1
             episode_reward = max(reward, episode_reward)
-
             # Ignore the "done" signal if it comes from hitting the time horizon.
             # (https://github.com/openai/spinningup/blob/master/spinup/algos/sac/sac.py)
             # mask = 1
@@ -80,10 +79,10 @@ def launch(args):
 
             state = next_state
 
-            # if done:
-            #     state = env.reset()
+            if done:
+                state = env.reset(pos=np.random.randint(14))
 
-        if len(memory) > args.start_steps:
+        if len(memory) > args.batch_size:
             # Number of updates per step in environment
             for i in range(args.updates_per_step):
                 # Update parameters of all the networks

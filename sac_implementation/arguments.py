@@ -16,7 +16,7 @@ def get_args():
 
     parser.add_argument('--policy', default="Gaussian",
                         help='Policy Type: Gaussian | Deterministic (default: Gaussian)')
-    parser.add_argument('--agent', default="SAC",
+    parser.add_argument('--agent', default="GSAC",
                         help='The RL algorithm to be used for training(default: SAC)')
 
     parser.add_argument('--eval', type=bool, default=True,
@@ -28,10 +28,10 @@ def get_args():
                         help='target smoothing coefficient(τ) (default: 0.005)')
     parser.add_argument('--lr', type=float, default=0.0003, metavar='G',
                         help='learning rate (default: 0.0003)')
-    parser.add_argument('--alpha', type=float, default=0.2, metavar='G',
+    parser.add_argument('--alpha', type=float, default=0.01, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
                                 term against the reward (default: 0.2)')
-    parser.add_argument('--automatic_entropy_tuning', type=bool, default=True   , metavar='G',
+    parser.add_argument('--automatic_entropy_tuning', type=bool, default=False   , metavar='G',
                         help='Automaically adjust α (default: False)')
 
     parser.add_argument('--gamma-1', type=float, default=0.99, metavar='G',
@@ -45,7 +45,7 @@ def get_args():
                         help='batch size (default: 256)')
     parser.add_argument('--max-episode-steps', type=int, default=200, metavar='N',
                         help='number of steps per episode (default: 100)')
-    parser.add_argument('--num_steps', type=int, default=150001, metavar='N',
+    parser.add_argument('--num_steps', type=int, default=200001, metavar='N',
                         help='maximum number of steps (default: 1000000)')
     parser.add_argument('--hidden_size', type=int, default=256, metavar='N',
                         help='hidden size (default: 256)')
@@ -55,7 +55,7 @@ def get_args():
 
     parser.add_argument('--updates_per_step', type=int, default=200, metavar='N',
                         help='model updates per simulator step (default: 1)')
-    parser.add_argument('--start_steps', type=int, default=2000, metavar='N',
+    parser.add_argument('--start_steps', type=int, default=-1, metavar='N',
                         help='Steps sampling random actions (default: 10000)')
     parser.add_argument('--target_update_interval', type=int, default=2, metavar='N',
                         help='Value target update per no. of updates per step (default: 1)')
