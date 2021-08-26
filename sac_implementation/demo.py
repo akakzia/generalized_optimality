@@ -1,5 +1,6 @@
 import argparse
 import gym
+import numpy as np
 import envs
 from sac_implementation.sac import SAC
 from sac_implementation.generalized_sac import GSAC
@@ -52,6 +53,8 @@ parser.add_argument('--cuda', action="store_true",
 parser.add_argument('--save_interval', type=int, default=10, metavar='N',
                     help='save and test interval(default: 10)')
 
+parser.add_argument('--init-zero', type=bool, default=False,
+                        help='If true, initializes first critic to zero')
 args = parser.parse_args()
 
 env = gym.make(args.env_name)
@@ -60,14 +63,15 @@ env = gym.make(args.env_name)
 agent = GSAC(env.observation_space.shape[0], env.action_space, args)
 # agent.load_model(actor_path='experiments/2021-08-23 19:38:12_SAC_0.99/models/actor',
 #                  critic_path='experiments/2021-08-23 19:38:12_SAC_0.99/models/critic')
-agent.load_model(actor_path='experiments/2021-08-23 20:13:25_GSAC_0.99_0.99/models/actor',
-                 critic_1_path='experiments/2021-08-23 20:13:25_GSAC_0.99_0.99/models/critic_1',
-                 critic_2_path='experiments/2021-08-23 20:13:25_GSAC_0.99_0.99/models/critic_2')
+agent.load_model(actor_path='experiments/2021-08-26 15:40:05_GSAC_0.99_0.99/models/actor',
+                 critic_1_path='experiments/2021-08-26 15:40:05_GSAC_0.99_0.99/models/critic_1',
+                 critic_2_path='experiments/2021-08-26 15:40:05_GSAC_0.99_0.99/models/critic_2')
 nb_demos = 20
 
 avg_reward = 0
 for episode in range(nb_demos):
-    state = env.reset(evaluate=True)
+    state = env.reset(pos=np.random.randint(14))
+    env.render()
     episode_reward = 0
     done = False
     for i in range(200):

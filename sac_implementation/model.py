@@ -13,6 +13,12 @@ def weights_init_(m):
         torch.nn.init.xavier_uniform_(m.weight, gain=1)
         torch.nn.init.constant_(m.bias, 0)
 
+# Initialize parameters to 0
+def weights_init_zero_(m):
+    if isinstance(m, nn.Linear):
+        torch.nn.init.constant_(m.weight, 0)
+        torch.nn.init.constant_(m.bias, 0)
+
 
 class ValueNetwork(nn.Module):
     def __init__(self, num_inputs, hidden_dim):
@@ -32,7 +38,7 @@ class ValueNetwork(nn.Module):
 
 
 class QNetwork(nn.Module):
-    def __init__(self, num_inputs, num_actions, hidden_dim):
+    def __init__(self, num_inputs, num_actions, hidden_dim, init_zero=False):
         super(QNetwork, self).__init__()
 
         # Q1 architecture
@@ -45,7 +51,10 @@ class QNetwork(nn.Module):
         self.linear5 = nn.Linear(hidden_dim, hidden_dim)
         self.linear6 = nn.Linear(hidden_dim, 1)
 
-        self.apply(weights_init_)
+        if init_zero:
+            self.apply(weights_init_zero_)
+        else:
+            self.apply(weights_init_)
 
     def forward(self, state, action):
         xu = torch.cat([state, action], 1)

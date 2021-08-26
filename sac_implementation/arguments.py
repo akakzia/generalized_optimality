@@ -11,7 +11,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='PyTorch Soft Actor-Critic Args')
     parser.add_argument('--env-name', default="DeceptiveSquare-v0",
                         help='Mujoco Gym environment (default: DeceptiveSquare-v0)')
-    parser.add_argument('--seed', type=int, default=np.random.randint(1e5), metavar='N',
+    parser.add_argument('--seed', type=int, default=33261, metavar='N',
                         help='random seed (default: 123456)')
 
     parser.add_argument('--policy', default="Gaussian",
@@ -28,10 +28,10 @@ def get_args():
                         help='target smoothing coefficient(τ) (default: 0.005)')
     parser.add_argument('--lr', type=float, default=0.0003, metavar='G',
                         help='learning rate (default: 0.0003)')
-    parser.add_argument('--alpha', type=float, default=0.01, metavar='G',
+    parser.add_argument('--alpha', type=float, default=0.1, metavar='G',
                         help='Temperature parameter α determines the relative importance of the entropy\
                                 term against the reward (default: 0.2)')
-    parser.add_argument('--automatic_entropy_tuning', type=bool, default=False   , metavar='G',
+    parser.add_argument('--automatic_entropy_tuning', type=bool, default=False, metavar='G',
                         help='Automaically adjust α (default: False)')
 
     parser.add_argument('--gamma-1', type=float, default=0.99, metavar='G',
@@ -43,17 +43,17 @@ def get_args():
 
     parser.add_argument('--batch_size', type=int, default=256, metavar='N',
                         help='batch size (default: 256)')
-    parser.add_argument('--max-episode-steps', type=int, default=200, metavar='N',
+    parser.add_argument('--max-episode-steps', type=int, default=100, metavar='N',
                         help='number of steps per episode (default: 100)')
     parser.add_argument('--num_steps', type=int, default=200001, metavar='N',
                         help='maximum number of steps (default: 1000000)')
     parser.add_argument('--hidden_size', type=int, default=256, metavar='N',
                         help='hidden size (default: 256)')
 
-    parser.add_argument('--update_frequency', type=int, default=1, metavar='N',
+    parser.add_argument('--update-frequency', type=int, default=1, metavar='N',
                         help='Frequency update between gamma 1 and 2')
 
-    parser.add_argument('--updates_per_step', type=int, default=200, metavar='N',
+    parser.add_argument('--updates_per_step', type=int, default=100, metavar='N',
                         help='model updates per simulator step (default: 1)')
     parser.add_argument('--start_steps', type=int, default=-1, metavar='N',
                         help='Steps sampling random actions (default: 10000)')
@@ -69,6 +69,9 @@ def get_args():
 
     parser.add_argument('--save-dir', default="experiments",
                         help='')
+
+    parser.add_argument('--init-zero', type=bool, default=False,
+                        help='If true, initializes first critic to zero')
 
     args = parser.parse_args()
 
