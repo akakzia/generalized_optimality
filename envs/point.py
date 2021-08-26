@@ -26,7 +26,7 @@ class PointEnv(AgentModel):
         super().__init__(file_path, 1)
         high = np.inf * np.ones(6, dtype=np.float32)
         high[3:] = self.VELOCITY_LIMITS * 1.2
-        high[self.ORI_IND] = np.pi
+        high[self.ORI_IND] = 0
         low = -high
         self.observation_space = gym.spaces.Box(low, high)
 
@@ -61,6 +61,8 @@ class PointEnv(AgentModel):
         qpos = self.init_qpos + self.np_random.uniform(
             size=self.sim.model.nq, low=-0.1, high=0.1
         )
+        # Randomize initial orientation
+        qpos[2] = self.np_random.uniform(low=-np.pi, high=np.pi)
         qvel = self.init_qvel + self.np_random.randn(self.sim.model.nv) * 0.1
 
         # Set everything other than point to original position and 0 velocity.
