@@ -11,7 +11,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='PyTorch Soft Actor-Critic Args')
     parser.add_argument('--env-name', default="DeceptiveSquare-v0",
                         help='Mujoco Gym environment (default: DeceptiveSquare-v0)')
-    parser.add_argument('--seed', type=int, default=np.random.uniform(1e5), metavar='N',
+    parser.add_argument('--seed', type=int, default=np.random.randint(1e5), metavar='N',
                         help='random seed (default: 123456)')
 
     parser.add_argument('--policy', default="Gaussian",
