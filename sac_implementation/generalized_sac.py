@@ -95,7 +95,7 @@ class GSAC(object):
             min_qf_next_target_2 = torch.min(qf1_next_target_2, qf2_next_target_2) - self.alpha * next_state_log_pi
 
             # computations from updated critic (1)
-            qf1_next_target_1, qf2_next_target_1 = self.critic_1(next_state_batch, next_state_action)
+            qf1_next_target_1, qf2_next_target_1 = self.critic_1_target(next_state_batch, next_state_action)
             min_qf_next_target_1 = torch.min(qf1_next_target_1, qf2_next_target_1) - self.alpha * next_state_log_pi
 
             next_q_2_value = reward_batch + mask_batch * (self.gamma_1 * min_qf_next_target_1 + self.gamma_2 * min_qf_next_target_2)
