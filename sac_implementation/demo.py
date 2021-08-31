@@ -1,6 +1,7 @@
 import argparse
 import gym
 import numpy as np
+import torch
 import envs
 from sac_implementation.sac import SAC
 from sac_implementation.generalized_sac import GSAC
@@ -61,21 +62,26 @@ env = gym.make(args.env_name)
 
 # Agent
 agent = GSAC(env.observation_space.shape[0], env.action_space, args)
-# agent.load_model(actor_path='experiments/2021-08-23 19:38:12_SAC_0.99/models/actor',
-#                  critic_path='experiments/2021-08-23 19:38:12_SAC_0.99/models/critic')
-agent.load_model(actor_path='experiments/2021-08-26 15:40:05_GSAC_0.99_0.99/models/actor',
-                 critic_1_path='experiments/2021-08-26 15:40:05_GSAC_0.99_0.99/models/critic_1',
-                 critic_2_path='experiments/2021-08-26 15:40:05_GSAC_0.99_0.99/models/critic_2')
-nb_demos = 20
+# agent.load_model(actor_path='experiments/2021-08-30 10:36:09_SAC_0.99/models/actor',
+#                  critic_path='experiments/2021-08-30 10:36:09_SAC_0.99/models/critic')
+# agent.load_model(actor_path='../experiments/2021-08-30 17:33:19_GSAC_0.99_0.99//models/actor',
+#                  critic_1_path='../experiments/2021-08-30 17:33:19_GSAC_0.99_0.99/models/critic_1',
+#                  critic_2_path='../experiments/2021-08-30 17:33:19_GSAC_0.99_0.99/models/critic_2')
+agent.load_model(actor_path='../experiments/2021-08-30 17:33:21_GSAC_0.99_0.99/models/actor',
+                 critic_1_path='../experiments/2021-08-30 17:33:21_GSAC_0.99_0.99/models/critic_1',
+                 critic_2_path='../experiments/2021-08-30 17:33:21_GSAC_0.99_0.99/models/critic_2')
+nb_demos = 50
 
 avg_reward = 0
 for episode in range(nb_demos):
-    state = env.reset(pos=np.random.randint(14))
+    state = env.reset(pos=np.random.randint(4, 8))
     env.render()
     episode_reward = 0
     done = False
-    for i in range(200):
+    for i in range(100):
         action = agent.select_action(state, evaluate=True)
+        print('Q1: ', agent.critic_1(torch.Tensor(state).unsqueeze(0), torch.Tensor(action).unsqueeze(0)))
+        print('Q2: ', agent.critic_2(torch.Tensor(state).unsqueeze(0), torch.Tensor(action).unsqueeze(0)))
         # action = env.action_space.sample()
 
         next_state, reward, done, _ = env.step(action)

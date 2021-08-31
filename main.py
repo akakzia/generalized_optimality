@@ -7,11 +7,11 @@ import itertools
 import torch
 from sac_implementation.sac import SAC
 from sac_implementation.generalized_sac import GSAC
-from sac_implementation.replay_memory import ReplayMemory
 from sac_implementation.arguments import get_args
 import sac_implementation.logger as logger
 from sac_implementation.utils import init_storage
 from rollout import RolloutWorker
+
 
 def launch(args):
     rank = MPI.COMM_WORLD.Get_rank()
@@ -43,37 +43,38 @@ def launch(args):
     stats['episodes'] = []
     stats['environment steps'] = []
     stats['updates'] = []
-    for k in range(14):
+    stats['qf pi'] = []
+    for k in range(1, 13):
         stats['test SR {}'.format(k)] = []
 
     # def rollout worker
     rollout_worker = RolloutWorker(env, agent, args)
-    ################################################################################"
-    # Training Loop
-    # total_numsteps = 0
+
     updates = 0
 
     for i_episode in itertools.count(1):
+        # Training Loop
         max_reward_obtained = rollout_worker.play()
         if len(rollout_worker.memory) > args.batch_size:
             # Number of updates per step in environment
             for i in range(args.updates_per_step):
                 # Update parameters of all the networks
-                critic_1_loss, critic_2_loss, policy_loss, ent_loss, alpha = rollout_worker.policy.update_parameters(rollout_worker.memory, args.batch_size, updates)
+                qf_pi= rollout_worker.policy.update_parameters(rollout_worker.memory, args.batch_size,updates)
                 updates += 1
         if rollout_worker.total_steps > args.num_steps:
             break
-
         print("Episode: {}, total numsteps: {}, reward: {}".format(i_episode, rollout_worker.total_steps, round(max_reward_obtained, 2)))
+        # End of training loop
 
+        # Evaluation
         if i_episode % args.save_interval == 0 and args.eval is True:
             logger.info('\n\nElapsed steps #{}'.format(rollout_worker.total_steps))
             avg_reward = None
-            for k in range(14):
+            for k in range(1, 13):
                 avg_reward = rollout_worker.eval(n=10, init=k)
                 stats['test SR {}'.format(k)].append(np.around(avg_reward, 2))
-
-            log_and_save(stats, i_episode, rollout_worker.total_steps, updates, avg_reward)
+            stats['qf pi'].append(qf_pi)
+            log_and_save(stats, i_episode, rollout_worker.total_steps, updates)
 
             if args.agent == 'GSAC':
                 rollout_worker.policy.save_model(path=model_path)
@@ -83,7 +84,7 @@ def launch(args):
 
     env.close()
 
-def log_and_save(stats, i_episode, total_numsteps, updates, avg_reward):
+def log_and_save(stats, i_episode, total_numsteps, updates):
     stats['episodes'].append(i_episode)
     stats['environment steps'].append(total_numsteps)
     stats['updates'].append(updates)

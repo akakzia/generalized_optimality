@@ -11,11 +11,11 @@ class GoalRewardDeceptiveMaze(MazeTask):
 
     def __init__(self, scale):
         super().__init__(scale)
-        self.goals = [MazeGoal(np.array([-4., 9.]) * scale), MazeGoal(np.array([0., 0.]) * scale, rgb=BLUE, deceptive=True)]
+        self.goals = [MazeGoal(np.array([0., 0.]) * scale), MazeGoal(np.array([-4., 9.]) * scale, rgb=BLUE, deceptive=True)]
 
     def reward(self, obs):
         if self.termination(obs) == 1:
-            return 0.1
+            return 0.8
         elif self.termination(obs) == 2:
             return 1.
         return self.PENALTY

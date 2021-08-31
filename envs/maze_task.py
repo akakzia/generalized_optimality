@@ -29,7 +29,7 @@ class MazeGoal:
         pos: np.ndarray,
         reward_scale: float = 1.0,
         rgb: Rgb = RED,
-        threshold: float = 0.6,
+        threshold: float = 1.,
         custom_size: Optional[float] = None,
         deceptive: bool = False,
     ) -> None:

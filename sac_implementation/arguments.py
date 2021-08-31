@@ -16,7 +16,7 @@ def get_args():
 
     parser.add_argument('--policy', default="Gaussian",
                         help='Policy Type: Gaussian | Deterministic (default: Gaussian)')
-    parser.add_argument('--agent', default="GSAC",
+    parser.add_argument('--agent', default="SAC",
                         help='The RL algorithm to be used for training(default: SAC)')
 
     parser.add_argument('--eval', type=bool, default=True,
@@ -50,14 +50,14 @@ def get_args():
     parser.add_argument('--hidden_size', type=int, default=256, metavar='N',
                         help='hidden size (default: 256)')
 
-    parser.add_argument('--update-frequency', type=int, default=1, metavar='N',
+    parser.add_argument('--update-frequency', type=int, default=20, metavar='N',
                         help='Frequency update between gamma 1 and 2')
 
     parser.add_argument('--updates-per-step', type=int, default=100, metavar='N',
                         help='model updates per simulator step (default: 1)')
     parser.add_argument('--start-steps', type=int, default=-1, metavar='N',
                         help='Steps sampling random actions (default: 10000)')
-    parser.add_argument('--target-update-interval', type=int, default=2, metavar='N',
+    parser.add_argument('--target-update-interval', type=int, default=1, metavar='N',
                         help='Value target update per no. of updates per step (default: 1)')
     parser.add_argument('--replay-size', type=int, default=1000000, metavar='N',
                         help='size of replay buffer (default: 10000000)')
