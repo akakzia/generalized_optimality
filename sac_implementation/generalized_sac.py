@@ -23,7 +23,7 @@ class GSAC(object):
 
         # Defining first critic for gamma 1
         self.critic_1 = QNetwork(num_inputs, action_space.shape[0], args.hidden_size, init_zero=args.init_zero).to(device=self.device)
-        self.critic_1_optim = Adam(self.critic_1.parameters(), lr=10 * args.lr)
+        self.critic_1_optim = Adam(self.critic_1.parameters(), lr= 0.0003)
 
         self.critic_1_target = QNetwork(num_inputs, action_space.shape[0], args.hidden_size, init_zero=args.init_zero).to(self.device)
 

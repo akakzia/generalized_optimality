@@ -38,7 +38,7 @@ def init_storage(args):
     if args.agent == 'SAC':
         logdir += '_{}'.format(args.gamma)
     else:
-        logdir += '_{}_{}'.format(args.gamma_1, args.gamma_2)
+        logdir += '_{}'.format(args.update_frequency)
     # path to save evaluations
     model_path = os.path.join(logdir, 'models')
     if not os.path.exists(logdir):
