@@ -15,6 +15,7 @@ from envs.reacher import ReacherEnv
 from envs.swimmer import SwimmerEnv
 from envs.maze_custom import GoalRewardEMaze
 from envs.maze_deceptive import GoalRewardDeceptiveMaze
+from envs.maze_u import GoalRewardUMaze
 
 for maze_id in TaskRegistry.keys():
     for i, task_cls in enumerate(TaskRegistry.tasks(maze_id)):
@@ -99,6 +100,17 @@ gym.envs.register(
         maze_task=GoalRewardDeceptiveMaze,
         maze_size_scaling=GoalRewardDeceptiveMaze.MAZE_SIZE_SCALING.point,
         inner_reward_scaling=GoalRewardDeceptiveMaze.INNER_REWARD_SCALING,
+    )
+)
+
+gym.envs.register(
+    id="UMaze-v0",
+    entry_point="envs.maze_env:MazeEnv",
+    kwargs=dict(
+        model_cls=PointEnv,
+        maze_task=GoalRewardUMaze,
+        maze_size_scaling=GoalRewardUMaze.MAZE_SIZE_SCALING.point,
+        inner_reward_scaling=GoalRewardUMaze.INNER_REWARD_SCALING,
     )
 )
 __version__ = "0.2.0"

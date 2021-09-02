@@ -9,14 +9,14 @@ Training hyper-parameters
 
 def get_args():
     parser = argparse.ArgumentParser(description='PyTorch Soft Actor-Critic Args')
-    parser.add_argument('--env-name', default="DeceptiveSquare-v0",
+    parser.add_argument('--env-name', default="UMaze-v0",
                         help='Mujoco Gym environment (default: DeceptiveSquare-v0)')
     parser.add_argument('--seed', type=int, default=np.random.randint(1e5), metavar='N',
                         help='random seed (default: 123456)')
 
     parser.add_argument('--policy', default="Gaussian",
                         help='Policy Type: Gaussian | Deterministic (default: Gaussian)')
-    parser.add_argument('--agent', default="SAC",
+    parser.add_argument('--agent', default="GSAC",
                         help='The RL algorithm to be used for training(default: SAC)')
 
     parser.add_argument('--eval', type=bool, default=True,
@@ -50,7 +50,7 @@ def get_args():
     parser.add_argument('--hidden_size', type=int, default=256, metavar='N',
                         help='hidden size (default: 256)')
 
-    parser.add_argument('--update-frequency', type=int, default=20, metavar='N',
+    parser.add_argument('--update-frequency', type=int, default=2, metavar='N',
                         help='Frequency update between gamma 1 and 2')
 
     parser.add_argument('--updates-per-step', type=int, default=100, metavar='N',

@@ -44,7 +44,7 @@ def launch(args):
     stats['environment steps'] = []
     stats['updates'] = []
     stats['qf pi'] = []
-    for k in range(1, 13):
+    for k in range(14):
         stats['test SR {}'.format(k)] = []
 
     # def rollout worker
@@ -70,7 +70,7 @@ def launch(args):
         if i_episode % args.save_interval == 0 and args.eval is True:
             logger.info('\n\nElapsed steps #{}'.format(rollout_worker.total_steps))
             avg_reward = None
-            for k in range(1, 13):
+            for k in range(14):
                 avg_reward = rollout_worker.eval(n=10, init=k)
                 stats['test SR {}'.format(k)].append(np.around(avg_reward, 2))
             stats['qf pi'].append(qf_pi)
